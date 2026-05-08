@@ -13,6 +13,7 @@ from gui.panels.sample_panel     import SamplePanel
 from gui.panels.order_panel      import OrderPanel
 from gui.panels.monitor_panel    import MonitorPanel
 from gui.panels.production_panel import ProductionPanel
+from gui.panels.release_panel    import ReleasePanel
 from gui.widgets import summary_card, h_line
 
 
@@ -53,6 +54,7 @@ class MainWindow(QMainWindow):
             ("주문 관리",     "📋"),
             ("모니터링",      "📈"),
             ("생산 라인",     "⚙"),
+            ("출고 처리",     "🚚"),
         ]
         self._nav_btns = []
         for i, (label, icon) in enumerate(menus):
@@ -83,6 +85,7 @@ class MainWindow(QMainWindow):
         self._stack.addWidget(OrderPanel(self._oc, self._sc, self._pc))
         self._stack.addWidget(MonitorPanel(self._sc, self._oc, self._pc))
         self._stack.addWidget(ProductionPanel(self._pc, self._oc))
+        self._stack.addWidget(ReleasePanel(self._oc))
         return self._stack
 
     def _switch(self, idx: int):
