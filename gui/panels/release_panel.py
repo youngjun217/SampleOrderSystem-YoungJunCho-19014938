@@ -38,6 +38,7 @@ class ReleasePanel(QWidget):
 
         # 테이블
         self._tbl = make_table(["주문 ID", "고객명", "시료명", "수량", "상태", "접수일"])
+        self._tbl.setColumnWidth(4, 130)   # 상태 컬럼
         lay.addWidget(self._tbl)
 
         # 하단 버튼

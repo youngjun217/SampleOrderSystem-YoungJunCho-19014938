@@ -28,13 +28,15 @@ def status_widget(text: str) -> QWidget:
     bg, fg = STATUS_COLORS.get(text, ("#45475a", "#cdd6f4"))
     container = QWidget()
     container.setStyleSheet("background: transparent;")
+    container.setMinimumWidth(120)   # 가장 긴 "CONFIRMED/PRODUCING" 기준
     lay = QHBoxLayout(container)
-    lay.setContentsMargins(6, 3, 6, 3)
+    lay.setContentsMargins(8, 3, 8, 3)
     lbl = QLabel(text)
     lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+    lbl.setMinimumWidth(100)
     lbl.setStyleSheet(
         f"background-color: {bg}; color: {fg}; "
-        f"border-radius: 5px; padding: 2px 10px; "
+        f"border-radius: 5px; padding: 3px 12px; "
         f"font-weight: bold; font-size: 11px;"
     )
     lay.addWidget(lbl)

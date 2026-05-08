@@ -43,13 +43,15 @@ class MonitorPanel(QWidget):
         lbl_order.setObjectName("label_hint")
         lay.addWidget(lbl_order)
         self._order_tbl = make_table(["주문 ID", "고객명", "시료명", "수량", "상태", "접수일"])
+        self._order_tbl.setColumnWidth(4, 130)  # 상태 컬럼
         lay.addWidget(self._order_tbl)
 
         lbl_inv = QLabel("시료별 재고 현황")
         lbl_inv.setObjectName("label_hint")
         lay.addWidget(lbl_inv)
         self._inv_tbl = make_table(["시료 ID", "이름", "수율", "재고", "대기주문", "상태"])
-        self._inv_tbl.setColumnWidth(2, 200)   # 게이지 바 컬럼 넓게
+        self._inv_tbl.setColumnWidth(2, 200)   # 수율 게이지 바 컬럼
+        self._inv_tbl.setColumnWidth(5, 100)   # 상태 (여유/부족/고갈)
         lay.addWidget(self._inv_tbl)
 
         self._refresh()

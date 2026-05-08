@@ -115,6 +115,7 @@ class MainWindow(QMainWindow):
 
         from gui.widgets import make_table
         self._dash_tbl = make_table(["주문 ID", "고객명", "시료명", "수량", "상태", "접수일"])
+        self._dash_tbl.setColumnWidth(4, 130)  # 상태 컬럼
         self._dash_lay.addWidget(self._dash_tbl)
         self._dash_lay.addStretch()
         return page

@@ -70,7 +70,9 @@ class OrderPanel(QWidget):
         self._load()
 
     def _make_order_table(self):
-        return make_table(["주문 ID", "고객명", "시료명", "수량", "상태", "접수일"])
+        tbl = make_table(["주문 ID", "고객명", "시료명", "수량", "상태", "접수일"])
+        tbl.setColumnWidth(4, 130)   # 상태 컬럼 — CONFIRMED/PRODUCING 기준
+        return tbl
 
     def _load(self, _=None):
         all_orders      = self._oc.get_all()
