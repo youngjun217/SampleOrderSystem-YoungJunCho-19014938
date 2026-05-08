@@ -4,3 +4,4 @@ __pycache__/
 .env
 tools/verify.py
 tools/test_*.py
+tools/render_*.py
