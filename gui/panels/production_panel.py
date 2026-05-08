@@ -5,8 +5,7 @@ from PyQt6.QtWidgets import (
     QFrame, QTableWidget, QMessageBox, QTabWidget,
 )
 from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QColor
-from gui.widgets import section_header, make_table, cell, cell_c, colored_cell, h_line
+from gui.widgets import section_header, make_table, cell, cell_c, h_line, status_widget
 from controller.order_controller import OrderController
 from controller.production_controller import ProductionController
 from model.production import ProductionStatus
@@ -125,13 +124,8 @@ class ProductionPanel(QWidget):
             self._run_tbl.setItem(r, 4, cell_c(f"{p.shortage} 개"))
             self._run_tbl.setItem(r, 5, cell_c(f"{p.actual_quantity} 개"))
             self._run_tbl.setItem(r, 6, cell_c(_fmt_time(p.total_time)))
-            eta_item = cell_c(eta)
-            if "초과" in eta:
-                eta_item.setForeground(QColor("#f38ba8"))
-            elif eta != "대기 중":
-                eta_item.setForeground(QColor("#a6e3a1"))
-            self._run_tbl.setItem(r, 7, eta_item)
-            self._run_tbl.setRowHeight(r, 36)
+            self._run_tbl.setCellWidget(r, 7, status_widget("⚠ 초과" if "초과" in eta else eta))
+            self._run_tbl.setRowHeight(r, 40)
 
         # ── WAITING 테이블 (FIFO) ──────────────────────────────────
         self._wait_tbl.setRowCount(len(waiting))
