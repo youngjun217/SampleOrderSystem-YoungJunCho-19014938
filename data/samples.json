@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "id": "SiC-010",
+    "name": "SiC 쇼트키 다이오드",
+    "avg_production_time": 36.0,
+    "yield_rate": 0.88,
+    "stock_quantity": 11,
+    "updated_at": "2026-05-08T11:28:16.058650"
+  },
+  {
+    "id": "InP-RF",
+    "name": "InP RF 소자",
+    "avg_production_time": 48.0,
+    "yield_rate": 0.8,
+    "stock_quantity": 9,
+    "updated_at": "2026-05-08T11:28:16.059115"
+  },
+  {
+    "id": "GaN-001",
+    "name": "질화갈륨 전력소자",
+    "avg_production_time": 24.0,
+    "yield_rate": 0.92,
+    "stock_quantity": 2,
+    "updated_at": "2026-05-08T11:28:16.059689"
+  },
+  {
+    "id": "GaAs-HBT",
+    "name": "GaAs HBT 에피",
+    "avg_production_time": 30.0,
+    "yield_rate": 0.85,
+    "stock_quantity": 5,
+    "updated_at": "2026-05-08T11:28:16.060666"
+  },
+  {
+    "id": "Si-CMOS",
+    "name": "표준 Si CMOS",
+    "avg_production_time": 12.0,
+    "yield_rate": 0.95,
+    "stock_quantity": 13,
+    "updated_at": "2026-05-08T11:28:16.061499"
+  }
+]

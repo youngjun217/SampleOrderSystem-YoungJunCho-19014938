@@ -1,5 +1,20 @@
 [
-  {"id": "LINE-01", "name": "생산라인 1호", "status": "IDLE", "current_order_id": ""},
-  {"id": "LINE-02", "name": "생산라인 2호", "status": "IDLE", "current_order_id": ""},
-  {"id": "LINE-03", "name": "생산라인 3호", "status": "IDLE", "current_order_id": ""}
+  {
+    "id": "LINE-01",
+    "name": "생산라인 1호",
+    "status": "RUNNING",
+    "current_order_id": "b9ec5a85"
+  },
+  {
+    "id": "LINE-02",
+    "name": "생산라인 2호",
+    "status": "RUNNING",
+    "current_order_id": "857ffb9e"
+  },
+  {
+    "id": "LINE-03",
+    "name": "생산라인 3호",
+    "status": "RUNNING",
+    "current_order_id": "8999f5c2"
+  }
 ]
