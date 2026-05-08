@@ -1,10 +1,33 @@
 import os
+import unicodedata
 from typing import List
 
 from controller.sample_controller import SampleController
 from model.sample import Sample
 
 LINE = "=" * 66
+
+
+def _dw(s: str) -> int:
+    """한국어 등 동아시아 문자는 터미널에서 2칸 차지 → 실제 표시 너비 반환."""
+    return sum(2 if unicodedata.east_asian_width(c) in ("W", "F") else 1 for c in s)
+
+
+def _ljust(s: str, width: int) -> str:
+    return s + " " * max(0, width - _dw(s))
+
+
+def _rjust(s: str, width: int) -> str:
+    return " " * max(0, width - _dw(s)) + s
+
+
+# 열 표시 너비 (display width 기준)
+_W_ID    = 12
+_W_NAME  = 22
+_W_TIME  =  9   # right
+_W_YIELD =  7   # right
+_W_STOCK =  6   # right
+_SEP_LEN = _W_ID + 1 + _W_NAME + 1 + _W_TIME + 1 + _W_YIELD + 1 + _W_STOCK  # 60
 
 
 class SampleView:
@@ -76,11 +99,11 @@ class SampleView:
             print(f"   [오류] {err}")
         else:
             print(f"   [등록 완료]")
-            print(f"   시료 ID : {sample.id}")
-            print(f"   이름    : {sample.name}")
-            print(f"   생산시간: {sample.avg_production_time}h")
-            print(f"   수율    : {sample.yield_rate * 100:.1f}%")
-            print(f"   재고    : {sample.stock_quantity}개")
+            print(f"   시료 ID  : {sample.id}")
+            print(f"   이름     : {sample.name}")
+            print(f"   생산시간 : {sample.avg_production_time}h")
+            print(f"   수율     : {sample.yield_rate * 100:.1f}%")
+            print(f"   재고     : {sample.stock_quantity}개")
         input("\n   Enter 를 누르세요.")
 
     # ------------------------------------------------------------------
@@ -112,13 +135,28 @@ class SampleView:
         if not samples:
             print("   검색 결과가 없습니다.")
             return
-        header = f"   {'시료ID':<12} {'이름':<18} {'생산시간':>8} {'수율':>7} {'재고':>6}"
+
+        header = (
+            "   "
+            + _ljust("시료ID",   _W_ID)   + " "
+            + _ljust("이름",     _W_NAME)  + " "
+            + _rjust("생산시간", _W_TIME)  + " "
+            + _rjust("수율",     _W_YIELD) + " "
+            + _rjust("재고",     _W_STOCK)
+        )
         print(header)
-        print("   " + "-" * 62)
+        print("   " + "-" * _SEP_LEN)
+
         for s in samples:
-            print(
-                f"   {s.id:<12} {s.name:<18} "
-                f"{s.avg_production_time:>7.1f}h "
-                f"{s.yield_rate * 100:>6.1f}% "
-                f"{s.stock_quantity:>5}개"
+            time_str  = f"{s.avg_production_time:.1f}h"
+            yield_str = f"{s.yield_rate * 100:.1f}%"
+            stock_str = f"{s.stock_quantity}개"
+            row = (
+                "   "
+                + _ljust(s.id,   _W_ID)   + " "
+                + _ljust(s.name, _W_NAME)  + " "
+                + _rjust(time_str,  _W_TIME)  + " "
+                + _rjust(yield_str, _W_YIELD) + " "
+                + _rjust(stock_str, _W_STOCK)
             )
+            print(row)
