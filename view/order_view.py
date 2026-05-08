@@ -9,11 +9,11 @@ from view.utils import ljust, rjust
 
 LINE = "=" * 66
 
-# 주문 목록 열 너비 (display width 기준)
+# 주문 목록 열 너비 (display width 기준 — 한글 2칸 포함)
 _W_ID     = 10
-_W_CUST   = 14
+_W_CUST   = 20   # 최대: "KAIST 반도체연구소" = 18
 _W_SID    = 10
-_W_SNAME  = 18
+_W_SNAME  = 20   # 최대: "SiC 쇼트키 다이오드" = 19
 _W_QTY    =  5
 _W_STATUS = 12
 _W_DATE   = 10
