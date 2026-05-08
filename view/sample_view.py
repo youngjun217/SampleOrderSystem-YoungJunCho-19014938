@@ -4,15 +4,12 @@ from typing import List
 from controller.sample_controller import SampleController
 from model.sample import Sample
 from view.utils import ljust as _ljust, rjust as _rjust
+from view.theme import (
+    section_line, menu_num, bold, muted, success, warn, danger,
+    info, c, BWHITE, BOLD, GRAY, pad_r, pad_l, dw,
+)
 
-
-# 열 표시 너비 (display width 기준)
-_W_ID    = 12
-_W_NAME  = 22
-_W_TIME  =  9   # right
-_W_YIELD =  7   # right
-_W_STOCK =  6   # right
-_SEP_LEN = _W_ID + 1 + _W_NAME + 1 + _W_TIME + 1 + _W_YIELD + 1 + _W_STOCK  # 60
+W = 66   # content width for section headers
 
 
 class SampleView:
@@ -22,18 +19,24 @@ class SampleView:
     def _clear(self) -> None:
         os.system("cls" if os.name == "nt" else "clear")
 
+    def _header(self, label: str) -> None:
+        print()
+        print("  " + section_line(label, W))
+        print()
+
     def run(self) -> None:
         while True:
             self._clear()
-            print(LINE)
-            print("                     시료 관리")
-            print(LINE)
-            print("   1.  시료 등록")
-            print("   2.  시료 조회  (전체 목록 + 재고)")
-            print("   3.  시료 검색  (ID / 이름)")
-            print("   0.  메인으로")
-            print(LINE)
-            choice = input("   선택 > ").strip()
+            print()
+            print("  " + section_line("시료 관리", W))
+            print()
+            print(f"  {menu_num('1')}  시료 등록")
+            print(f"  {menu_num('2')}  시료 조회  (전체 목록 + 재고)")
+            print(f"  {menu_num('3')}  시료 검색  (ID / 이름)")
+            print(f"  {menu_num('0')}  메인으로")
+            print()
+
+            choice = input(f"  {bold('선택')} {muted('▶')} ").strip()
 
             if choice == "1":
                 self._register()
@@ -44,104 +47,105 @@ class SampleView:
             elif choice == "0":
                 break
             else:
-                input("   잘못된 선택입니다. Enter 를 누르세요.")
+                input(f"  {warn('잘못된 선택입니다.')}  Enter 를 누르세요.")
 
     # ------------------------------------------------------------------
     def _register(self) -> None:
         self._clear()
-        print(LINE)
-        print("   시료 등록")
-        print(LINE)
+        self._header("시료 등록")
 
-        sample_id = input("   시료 ID         : ").strip()
+        sample_id = input(f"  {info('시료 ID')}         : ").strip()
         if not sample_id:
-            input("   시료 ID는 필수입니다. Enter 로 돌아갑니다.")
+            input(f"  {warn('시료 ID를 입력해야 합니다.')}  Enter 로 돌아갑니다.")
             return
 
-        name = input("   이름             : ").strip()
+        name = input(f"  {info('이름')}             : ").strip()
         if not name:
-            input("   이름은 필수입니다. Enter 로 돌아갑니다.")
+            input(f"  {warn('이름은 필수입니다.')}  Enter 로 돌아갑니다.")
             return
 
         try:
-            avg_time = float(input("   평균 생산시간 (h) : ").strip())
+            avg_time = float(input(f"  {info('평균 생산시간 (h)')} : ").strip())
         except ValueError:
-            input("   숫자를 입력해야 합니다. Enter 로 돌아갑니다.")
+            input(f"  {warn('숫자를 입력해야 합니다.')}  Enter 로 돌아갑니다.")
             return
 
         try:
-            yield_rate = float(input("   수율 (0.0~1.0)   : ").strip())
+            yield_rate = float(input(f"  {info('수율 (0.0~1.0)')}   : ").strip())
         except ValueError:
-            input("   숫자를 입력해야 합니다. Enter 로 돌아갑니다.")
+            input(f"  {warn('숫자를 입력해야 합니다.')}  Enter 로 돌아갑니다.")
             return
 
-        stock_str = input("   초기 재고 (개)   : ").strip()
+        stock_str = input(f"  {info('초기 재고 (개)')}   : ").strip()
         stock = int(stock_str) if stock_str.isdigit() else 0
 
         sample, err = self._ctrl.register(sample_id, name, avg_time, yield_rate, stock)
         print()
         if err:
-            print(f"   [오류] {err}")
+            print(f"  {danger('[ 오류 ]')}  {err}")
         else:
-            print(f"   [등록 완료]")
-            print(f"   시료 ID  : {sample.id}")
-            print(f"   이름     : {sample.name}")
-            print(f"   생산시간 : {sample.avg_production_time}h")
-            print(f"   수율     : {sample.yield_rate * 100:.1f}%")
-            print(f"   재고     : {sample.stock_quantity}개")
-        input("\n   Enter 를 누르세요.")
+            print(f"  {success('[ 등록 완료 ]')}")
+            print(f"  시료 ID  : {bold(sample.id)}")
+            print(f"  이름     : {sample.name}")
+            print(f"  생산시간 : {sample.avg_production_time}h")
+            print(f"  수율     : {sample.yield_rate * 100:.1f}%")
+            print(f"  재고     : {sample.stock_quantity}개")
+        input(f"\n  {muted('Enter 를 누르세요.')}")
 
     # ------------------------------------------------------------------
     def _list_all(self) -> None:
         self._clear()
-        print(LINE)
-        print("   시료 조회  (전체 목록)")
-        print(LINE)
+        self._header("시료 조회  (전체 목록)")
         self._print_table(self._ctrl.get_all())
-        input("\n   Enter 를 누르세요.")
+        input(f"\n  {muted('Enter 를 누르세요.')}")
 
     # ------------------------------------------------------------------
     def _search(self) -> None:
         self._clear()
-        print(LINE)
-        print("   시료 검색")
-        print(LINE)
-        keyword = input("   검색어 (ID 또는 이름) : ").strip()
+        self._header("시료 검색")
+        keyword = input(f"  {info('검색어')} (ID 또는 이름) : ").strip()
         if not keyword:
-            input("   검색어를 입력해야 합니다. Enter 로 돌아갑니다.")
+            input(f"  {warn('검색어를 입력해야 합니다.')}  Enter 로 돌아갑니다.")
             return
-        results = self._ctrl.search(keyword)
         print()
-        self._print_table(results)
-        input("\n   Enter 를 누르세요.")
+        self._print_table(self._ctrl.search(keyword))
+        input(f"\n  {muted('Enter 를 누르세요.')}")
 
     # ------------------------------------------------------------------
+    _W_ID    = 12
+    _W_NAME  = 22
+    _W_TIME  =  9
+    _W_YIELD =  7
+    _W_STOCK =  6
+
     def _print_table(self, samples: List[Sample]) -> None:
         if not samples:
-            print("   검색 결과가 없습니다.")
+            print(f"  {muted('검색 결과가 없습니다.')}")
             return
 
+        W_ID, W_NAME, W_TIME, W_YIELD, W_STOCK = (
+            self._W_ID, self._W_NAME, self._W_TIME, self._W_YIELD, self._W_STOCK
+        )
+        sep = W_ID + 1 + W_NAME + 1 + W_TIME + 1 + W_YIELD + 1 + W_STOCK
+
         header = (
-            "   "
-            + _ljust("시료ID",   _W_ID)   + " "
-            + _ljust("이름",     _W_NAME)  + " "
-            + _rjust("생산시간", _W_TIME)  + " "
-            + _rjust("수율",     _W_YIELD) + " "
-            + _rjust("재고",     _W_STOCK)
+            "  " +
+            _ljust(bold("시료ID"),   W_ID)   + " " +
+            _ljust(bold("이름"),     W_NAME)  + " " +
+            _rjust(bold("생산시간"), W_TIME)  + " " +
+            _rjust(bold("수율"),     W_YIELD) + " " +
+            _rjust(bold("재고"),     W_STOCK)
         )
         print(header)
-        print("   " + "-" * _SEP_LEN)
+        print("  " + muted("─" * sep))
 
         for s in samples:
-            time_str  = f"{s.avg_production_time:.1f}h"
-            yield_str = f"{s.yield_rate * 100:.1f}%"
-            stock_str = f"{s.stock_quantity}개"
-            row = (
-                "   "
-                + _ljust(s.id,   _W_ID)   + " "
-                + _ljust(s.name, _W_NAME)  + " "
-                + _rjust(time_str,  _W_TIME)  + " "
-                + _rjust(yield_str, _W_YIELD) + " "
-                + _rjust(stock_str, _W_STOCK)
+            stock_col = (success if s.stock_quantity > 0 else danger)(f"{s.stock_quantity}개")
+            print(
+                "  " +
+                _ljust(info(s.id),   W_ID)   + " " +
+                _ljust(s.name,       W_NAME)  + " " +
+                _rjust(f"{s.avg_production_time:.1f}h", W_TIME) + " " +
+                _rjust(f"{s.yield_rate * 100:.1f}%",   W_YIELD) + " " +
+                _rjust(stock_col,    W_STOCK)
             )
-            print(row)
