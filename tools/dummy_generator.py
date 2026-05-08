@@ -20,11 +20,12 @@ from model.production import Production, ProductionStatus
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
 SAMPLE_SPECS = [
-    ("GaN-001", "GaN 기반 전력소자 200mm"),
-    ("SiC-010", "SiC 쇼트키 다이오드 150mm"),
-    ("Si-CMOS", "표준 Si CMOS 300mm"),
-    ("InP-RF",  "InP 기반 RF 소자 100mm"),
-    ("GaAs-HBT","GaAs HBT 에피 150mm"),
+    # (시료ID, 이름, 평균생산시간(h), 수율)
+    ("GaN-001",  "질화갈륨 전력소자",     24.0, 0.92),
+    ("SiC-010",  "SiC 쇼트키 다이오드",  36.0, 0.88),
+    ("Si-CMOS",  "표준 Si CMOS",         12.0, 0.95),
+    ("InP-RF",   "InP RF 소자",           48.0, 0.80),
+    ("GaAs-HBT", "GaAs HBT 에피",        30.0, 0.85),
 ]
 
 CUSTOMERS = ["KAIST 반도체연구소", "서울대 나노팹", "삼성전기 R&D", "팹리스코어", "SK하이닉스 연구소"]
@@ -70,11 +71,12 @@ def generate(
     # 시료 생성
     specs = random.sample(SAMPLE_SPECS, min(sample_count, len(SAMPLE_SPECS)))
     samples = []
-    for name, spec in specs:
+    for sample_id, name, avg_time, yield_rate in specs:
         s = Sample(
-            id=str(uuid.uuid4())[:8],
+            id=sample_id,
             name=name,
-            spec=spec,
+            avg_production_time=avg_time,
+            yield_rate=yield_rate,
             stock_quantity=random.randint(0, 20),
         )
         sample_repo.save(s)
