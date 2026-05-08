@@ -1,5 +1,5 @@
 import uuid
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from model.order import Order, OrderStatus
 from repository.order_repository import OrderRepository
@@ -12,20 +12,27 @@ class OrderController:
         self._sample_repo = sample_repo
 
     def create(
-        self, customer_name: str, sample_id: str, quantity: int, due_date: str
-    ) -> Optional[Order]:
+        self,
+        customer_name: str,
+        sample_id: str,
+        quantity: int,
+    ) -> Tuple[Optional[Order], str]:
+        if not customer_name:
+            return None, "고객명을 입력해야 합니다."
+        if quantity <= 0:
+            return None, "주문 수량은 1 이상이어야 합니다."
         sample = self._sample_repo.find_by_id(sample_id)
         if not sample:
-            return None
+            return None, f"등록되지 않은 시료 ID입니다: {sample_id}"
         order = Order(
             id=str(uuid.uuid4())[:8],
             customer_name=customer_name,
             sample_id=sample_id,
             sample_name=sample.name,
             quantity=quantity,
-            due_date=due_date,
+            due_date="",
         )
-        return self._order_repo.save(order)
+        return self._order_repo.save(order), ""
 
     def get_all(self) -> List[Order]:
         return self._order_repo.find_all()

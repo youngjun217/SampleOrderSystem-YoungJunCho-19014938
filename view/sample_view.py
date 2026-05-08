@@ -1,24 +1,9 @@
 import os
-import unicodedata
 from typing import List
 
 from controller.sample_controller import SampleController
 from model.sample import Sample
-
-LINE = "=" * 66
-
-
-def _dw(s: str) -> int:
-    """한국어 등 동아시아 문자는 터미널에서 2칸 차지 → 실제 표시 너비 반환."""
-    return sum(2 if unicodedata.east_asian_width(c) in ("W", "F") else 1 for c in s)
-
-
-def _ljust(s: str, width: int) -> str:
-    return s + " " * max(0, width - _dw(s))
-
-
-def _rjust(s: str, width: int) -> str:
-    return " " * max(0, width - _dw(s)) + s
+from view.utils import ljust as _ljust, rjust as _rjust
 
 
 # 열 표시 너비 (display width 기준)
