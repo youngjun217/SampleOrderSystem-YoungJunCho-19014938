@@ -62,20 +62,20 @@ def yield_bar_widget(value: float) -> QWidget:
     bar.setValue(pct)
     bar.setTextVisible(True)
     bar.setFormat(f"{value * 100:.1f}%")
-    bar.setFixedHeight(18)
+    bar.setFixedHeight(20)
     bar.setStyleSheet(f"""
         QProgressBar {{
-            background-color: #1e1e2e;
-            border: 1px solid #45475a;
+            background-color: #313244;
+            border: none;
             border-radius: 5px;
             text-align: center;
-            color: #cdd6f4;
-            font-size: 11px;
+            color: #1e1e2e;
+            font-size: 12px;
             font-weight: bold;
         }}
         QProgressBar::chunk {{
             background-color: {color};
-            border-radius: 4px;
+            border-radius: 5px;
         }}
     """)
     lay.addWidget(bar)
