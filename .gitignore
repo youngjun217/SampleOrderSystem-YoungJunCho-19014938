@@ -3,3 +3,4 @@ __pycache__/
 *.pyo
 .env
 tools/verify.py
+tools/test_*.py
