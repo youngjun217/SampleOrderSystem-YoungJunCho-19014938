@@ -95,6 +95,25 @@ python -X utf8 monitor/dashboard.py
 
 ---
 
+## 주문 상태 (OrderStatus)
+
+| 상태 | 코드 | 설명 |
+|------|------|------|
+| 주문접수 | `RESERVED` | 주문담당자가 주문을 등록한 초기 상태 |
+| 주문거절 | `REJECTED` | 생산담당자가 주문을 거절한 상태 (사유 포함) |
+| 생산중 | `PRODUCING` | 주문 승인 완료, 재고 부족으로 생산라인 가동 중 |
+| 출고대기 | `CONFIRMED` | 주문 승인 완료, 재고 확보되어 출고 대기 중 |
+| 출고완료 | `RELEASE` | 시료가 고객에게 출고된 최종 상태 |
+
+```
+RESERVED
+  ├─ 거절 ──────────────────────────────▶ REJECTED
+  ├─ 승인 + 재고 부족 ──▶ PRODUCING ──▶ CONFIRMED ──▶ RELEASE
+  └─ 승인 + 재고 충분 ──────────────▶ CONFIRMED ──▶ RELEASE
+```
+
+---
+
 ## 도메인 개념
 
 | 용어 | 설명 |
@@ -102,6 +121,7 @@ python -X utf8 monitor/dashboard.py
 | 시료 (Sample) | S Semi가 생산·납품하는 반도체 시료. 종류별로 재고를 관리한다. |
 | 주문 (Order) | 주문담당자가 고객 이메일을 기반으로 시스템에 등록하는 주문 단위. |
 | 승인/거절 | 생산담당자가 주문을 검토하여 처리 가능 여부를 결정하는 단계. |
+| 주문 상태 흐름 | `RESERVED → (REJECTED / PRODUCING → CONFIRMED → RELEASE / CONFIRMED → RELEASE)` |
 | 생산라인 (ProductionLine) | 공장의 웨이퍼 공정 설비 흐름 단위. 시료를 하나씩 순차 생산하며 동시에 하나의 주문만 처리한다. |
 | 생산 이력 (Production) | 특정 생산라인에서 특정 주문을 위해 시료를 생산한 기록. |
 | 재고 분기 로직 | 주문 승인 시 재고 충분 → 즉시 출고, 재고 부족 → 유휴 생산라인 배정 후 생산. |
