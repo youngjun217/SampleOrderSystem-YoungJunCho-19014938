@@ -9,7 +9,7 @@ from view.theme import (
     info, c, BWHITE, BOLD, GRAY, pad_r, pad_l, dw,
 )
 
-W = 66   # content width for section headers
+from view.theme import TABLE as W   # section-line width (= TABLE = 78)
 
 
 class SampleView:
@@ -112,11 +112,12 @@ class SampleView:
         input(f"\n  {muted('Enter 를 누르세요.')}")
 
     # ------------------------------------------------------------------
+    # 컬럼 합계 74 + 구분자 4 = 78 (TABLE 기준)
     _W_ID    = 12
-    _W_NAME  = 22
-    _W_TIME  =  9
-    _W_YIELD =  7
-    _W_STOCK =  6
+    _W_NAME  = 28
+    _W_TIME  = 12
+    _W_YIELD = 10
+    _W_STOCK = 12
 
     def _print_table(self, samples: List[Sample]) -> None:
         if not samples:
@@ -126,7 +127,7 @@ class SampleView:
         W_ID, W_NAME, W_TIME, W_YIELD, W_STOCK = (
             self._W_ID, self._W_NAME, self._W_TIME, self._W_YIELD, self._W_STOCK
         )
-        sep = W_ID + 1 + W_NAME + 1 + W_TIME + 1 + W_YIELD + 1 + W_STOCK
+        sep = W_ID + 1 + W_NAME + 1 + W_TIME + 1 + W_YIELD + 1 + W_STOCK  # = 78
 
         header = (
             "  " +

@@ -69,8 +69,9 @@ def pad_l(text: str, width: int, fill: str = " ") -> str:
     return fill * max(0, width - dw(text)) + text
 
 # ── Box drawing ───────────────────────────────────────────────────
-W = 70          # total outer box width
-INNER = W - 4   # usable inner display width (║  …  ║)
+W     = 80          # total outer box width
+INNER = W - 6       # usable inner display width: W - (║ + 2sp) * 2 = W-6
+TABLE = 78          # standard table & section-line width (== W-2)
 
 TL, TR, BL, BR = "╔", "╗", "╚", "╝"
 H,  V          = "═", "║"
@@ -87,7 +88,7 @@ def box_line(content: str = "") -> str:
     pad = max(0, INNER - dw(content))
     return f"{muted(V)}  {content}{' ' * pad}  {muted(V)}"
 
-def section_line(label: str, width: int = 66) -> str:
+def section_line(label: str, width: int = TABLE) -> str:
     plain = re.sub(r"\033\[[0-9;]*m", "", label)
     bar_w = max(0, width - dw(plain) - 4)
     left  = bar_w // 2

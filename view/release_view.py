@@ -3,7 +3,7 @@ import os
 from controller.order_controller import OrderController
 from view.theme import section_line, menu_num, bold, muted, warn, success, info, status_c
 
-W = 66
+from view.theme import TABLE as W
 
 
 class ReleaseView:

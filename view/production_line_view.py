@@ -9,7 +9,7 @@ from view.theme import (
     info, status_c, c, BOLD,
 )
 
-W = 66
+from view.theme import TABLE as W   # section-line width = 78
 
 
 class ProductionLineView:
@@ -68,11 +68,12 @@ class ProductionLineView:
 
         prod_by_order = {p.order_id: p for p in running}
 
-        _W_LINE   = 14
-        _W_STATUS =  8
-        _W_OID    = 12
-        _W_SNAME  = 20
-        _W_QTY    =  5
+        # 합계 74 + 구분자 4 = 78
+        _W_LINE   = 16
+        _W_STATUS = 10
+        _W_OID    = 14
+        _W_SNAME  = 24
+        _W_QTY    = 10
 
         header = (
             "  " +
@@ -120,10 +121,11 @@ class ProductionLineView:
             input(f"\n  {muted('Enter 를 누르세요.')}")
             return
 
-        _W_PID   = 10
-        _W_OID   = 10
-        _W_SNAME = 20
-        _W_QTY   =  5
+        # 합계 75 + 구분자 3 = 78
+        _W_PID   = 12
+        _W_OID   = 12
+        _W_SNAME = 28
+        _W_QTY   = 23
 
         print("  " +
               ljust(bold("생산ID"), _W_PID)  + " " +

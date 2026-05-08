@@ -11,17 +11,16 @@ from view.theme import (
     info, status_c, c, BOLD, GRAY,
 )
 
-W = 66
+from view.theme import TABLE as W   # section-line width (= TABLE = 78)
 
-# 주문 목록 열 너비 (display width 기준)
-_W_ID     = 10
+# 주문 목록 열 너비 — SID 제거, 합계 73 + 구분자 5 = 78 (TABLE 기준)
+_W_ID     =  8
 _W_CUST   = 20
-_W_SID    = 10
 _W_SNAME  = 20
 _W_QTY    =  5
-_W_STATUS = 12
+_W_STATUS = 10
 _W_DATE   = 10
-_SEP_LEN  = _W_ID + 1 + _W_CUST + 1 + _W_SID + 1 + _W_SNAME + 1 + _W_QTY + 1 + _W_STATUS + 1 + _W_DATE
+_SEP_LEN  = _W_ID + 1 + _W_CUST + 1 + _W_SNAME + 1 + _W_QTY + 1 + _W_STATUS + 1 + _W_DATE  # = 78
 
 
 class OrderView:
@@ -242,7 +241,6 @@ class OrderView:
             "  " +
             ljust(bold("주문ID"),  _W_ID)    + " " +
             ljust(bold("고객명"),  _W_CUST)  + " " +
-            ljust(bold("시료ID"),  _W_SID)   + " " +
             ljust(bold("시료명"),  _W_SNAME) + " " +
             rjust(bold("수량"),    _W_QTY)   + " " +
             ljust(bold("상태"),    _W_STATUS) + " " +
@@ -254,12 +252,11 @@ class OrderView:
         for o in sorted(orders, key=lambda x: x.created_at, reverse=True):
             row = (
                 "  " +
-                ljust(info(o.id),            _W_ID)    + " " +
-                ljust(o.customer_name,        _W_CUST)  + " " +
-                ljust(o.sample_id,            _W_SID)   + " " +
-                ljust(o.sample_name,          _W_SNAME) + " " +
-                rjust(f"{o.quantity}개",      _W_QTY)   + " " +
-                ljust(status_c(o.status.value), _W_STATUS) + " " +
-                ljust(muted(o.created_at[:10]), _W_DATE)
+                ljust(info(o.id),               _W_ID)    + " " +
+                ljust(o.customer_name,           _W_CUST)  + " " +
+                ljust(o.sample_name,             _W_SNAME) + " " +
+                rjust(f"{o.quantity}개",         _W_QTY)   + " " +
+                ljust(status_c(o.status.value),  _W_STATUS) + " " +
+                ljust(muted(o.created_at[:10]),  _W_DATE)
             )
             print(row)

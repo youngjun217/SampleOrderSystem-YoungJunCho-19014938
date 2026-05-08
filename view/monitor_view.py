@@ -12,7 +12,7 @@ from view.theme import (
     info, status_c, c, BOLD,
 )
 
-W = 66
+from view.theme import TABLE as W   # section-line width (= TABLE = 78)
 
 ACTIVE_STATUSES = [
     OrderStatus.RESERVED,
@@ -21,19 +21,22 @@ ACTIVE_STATUSES = [
     OrderStatus.RELEASE,
 ]
 
-_W_OID   = 10
+# 주문 테이블 — 합계 73 + 구분자 5 = 78 (order_view와 동일)
+_W_OID   =  8
 _W_CUST  = 20
 _W_SNAME = 20
 _W_QTY   =  5
 _W_DATE  = 10
-_O_SEP   = _W_OID + 1 + _W_CUST + 1 + _W_SNAME + 1 + _W_QTY + 1 + _W_DATE
+_W_STATUS_O = 10
+_O_SEP   = _W_OID + 1 + _W_CUST + 1 + _W_SNAME + 1 + _W_QTY + 1 + _W_STATUS_O + 1 + _W_DATE  # = 78
 
-_W_SID    = 12
-_W_SNAME2 = 20
-_W_STOCK  =  7
-_W_DEMAND =  9
-_W_SLABEL =  4
-_I_SEP    = _W_SID + 1 + _W_SNAME2 + 1 + _W_STOCK + 1 + _W_DEMAND + 1 + _W_SLABEL
+# 재고 테이블 — 합계 74 + 구분자 4 = 78
+_W_SID    = 14
+_W_SNAME2 = 26
+_W_STOCK  = 10
+_W_DEMAND = 12
+_W_SLABEL = 12
+_I_SEP    = _W_SID + 1 + _W_SNAME2 + 1 + _W_STOCK + 1 + _W_DEMAND + 1 + _W_SLABEL  # = 78
 
 STOCK_LABEL_COLOR = {"여유": success, "부족": warn, "고갈": danger}
 
@@ -174,10 +177,11 @@ class MonitorView:
     def _print_order_table(self, orders: List[Order]) -> None:
         header = (
             "  " +
-            ljust(bold("주문ID"), _W_OID)   + " " +
-            ljust(bold("고객명"), _W_CUST)  + " " +
-            ljust(bold("시료명"), _W_SNAME) + " " +
-            rjust(bold("수량"),   _W_QTY)   + " " +
+            ljust(bold("주문ID"), _W_OID)      + " " +
+            ljust(bold("고객명"), _W_CUST)     + " " +
+            ljust(bold("시료명"), _W_SNAME)    + " " +
+            rjust(bold("수량"),   _W_QTY)      + " " +
+            ljust(bold("상태"),   _W_STATUS_O) + " " +
             ljust(bold("접수일"), _W_DATE)
         )
         print(header)
@@ -185,9 +189,10 @@ class MonitorView:
         for o in sorted(orders, key=lambda x: x.created_at, reverse=True):
             print(
                 "  " +
-                ljust(info(o.id),           _W_OID)   + " " +
-                ljust(o.customer_name,       _W_CUST)  + " " +
-                ljust(o.sample_name,         _W_SNAME) + " " +
-                rjust(f"{o.quantity}개",     _W_QTY)   + " " +
+                ljust(info(o.id),              _W_OID)      + " " +
+                ljust(o.customer_name,          _W_CUST)     + " " +
+                ljust(o.sample_name,            _W_SNAME)    + " " +
+                rjust(f"{o.quantity}개",        _W_QTY)      + " " +
+                ljust(status_c(o.status.value), _W_STATUS_O) + " " +
                 ljust(muted(o.created_at[:10]), _W_DATE)
             )
