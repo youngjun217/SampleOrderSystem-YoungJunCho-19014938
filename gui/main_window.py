@@ -139,13 +139,13 @@ class MainWindow(QMainWindow):
         # 테이블
         from model.order import OrderStatus
         orders = sorted(self._oc.get_all(), key=lambda o: o.created_at, reverse=True)[:20]
-        from gui.widgets import cell, cell_c, colored_cell
+        from gui.widgets import cell, cell_c, status_widget
         self._dash_tbl.setRowCount(len(orders))
         for r, o in enumerate(orders):
             self._dash_tbl.setItem(r, 0, cell(o.id))
             self._dash_tbl.setItem(r, 1, cell(o.customer_name))
             self._dash_tbl.setItem(r, 2, cell(o.sample_name))
             self._dash_tbl.setItem(r, 3, cell_c(f"{o.quantity} 개"))
-            self._dash_tbl.setItem(r, 4, colored_cell(o.status.value))
+            self._dash_tbl.setCellWidget(r, 4, status_widget(o.status.value))
             self._dash_tbl.setItem(r, 5, cell(o.created_at[:10]))
-            self._dash_tbl.setRowHeight(r, 34)
+            self._dash_tbl.setRowHeight(r, 40)

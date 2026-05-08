@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
     QMessageBox, QTabWidget, QTableWidget,
 )
 from PyQt6.QtCore import Qt
-from gui.widgets import section_header, make_table, cell, cell_c, colored_cell, h_line
+from gui.widgets import section_header, make_table, cell, cell_c, h_line, status_widget
 from controller.order_controller import OrderController
 from controller.production_controller import ProductionController
 from controller.sample_controller import SampleController
@@ -35,7 +35,6 @@ class OrderPanel(QWidget):
         lay.addLayout(hdr)
         lay.addWidget(h_line())
 
-        # 탭
         tabs = QTabWidget()
         tabs.setStyleSheet("""
             QTabWidget::pane { border: 1px solid #313244; border-radius: 8px; top: -1px; }
@@ -55,7 +54,6 @@ class OrderPanel(QWidget):
         lay.addWidget(tabs)
         self._tabs = tabs
 
-        # 하단 액션 버튼
         btn_row = QHBoxLayout()
         btn_row.addStretch()
         btn_approve = QPushButton("✔  승인"); btn_approve.setObjectName("btn_success")
@@ -90,9 +88,9 @@ class OrderPanel(QWidget):
             tbl.setItem(r, 1, cell(o.customer_name))
             tbl.setItem(r, 2, cell(o.sample_name))
             tbl.setItem(r, 3, cell_c(f"{o.quantity} 개"))
-            tbl.setItem(r, 4, colored_cell(o.status.value))
+            tbl.setCellWidget(r, 4, status_widget(o.status.value))
             tbl.setItem(r, 5, cell(o.created_at[:10]))
-            tbl.setRowHeight(r, 36)
+            tbl.setRowHeight(r, 40)
 
     def _get_selected_order_id(self):
         tbl = self._tabs.currentWidget()
@@ -142,20 +140,27 @@ class OrderPanel(QWidget):
 class RejectDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("주문 거절"); self.setFixedSize(380, 180)
+        self.setWindowTitle("주문 거절")
+        self.setFixedSize(420, 200)
         lay = QVBoxLayout(self)
-        lay.setContentsMargins(24, 24, 24, 24); lay.setSpacing(14)
+        lay.setContentsMargins(28, 28, 28, 28)
+        lay.setSpacing(16)
         lay.addWidget(QLabel("거절 사유를 입력하세요."))
-        self._edit = QLineEdit(); self._edit.setPlaceholderText("예: 납기 불가, 시료 미등록 등")
+        self._edit = QLineEdit()
+        self._edit.setPlaceholderText("예: 납기 불가, 시료 미등록 등")
+        self._edit.setMinimumHeight(38)
         lay.addWidget(self._edit)
         btns = QHBoxLayout(); btns.addStretch()
-        cancel = QPushButton("취소"); cancel.setObjectName("btn_secondary"); cancel.clicked.connect(self.reject)
-        ok = QPushButton("거절 확정"); ok.setObjectName("btn_danger"); ok.clicked.connect(self._confirm)
+        cancel = QPushButton("취소"); cancel.setObjectName("btn_secondary")
+        cancel.setMinimumWidth(90); cancel.clicked.connect(self.reject)
+        ok = QPushButton("거절 확정"); ok.setObjectName("btn_danger")
+        ok.setMinimumWidth(110); ok.clicked.connect(self._confirm)
         btns.addWidget(cancel); btns.addWidget(ok); lay.addLayout(btns)
 
     def _confirm(self):
         if not self._edit.text().strip():
-            QMessageBox.warning(self, "오류", "사유를 입력해야 합니다."); return
+            QMessageBox.warning(self, "오류", "사유를 입력해야 합니다.")
+            return
         self.accept()
 
     def reason(self): return self._edit.text().strip()
@@ -165,30 +170,51 @@ class ReserveDialog(QDialog):
     def __init__(self, sc: SampleController, oc: OrderController, parent=None):
         super().__init__(parent)
         self._sc = sc; self._oc = oc
-        self.setWindowTitle("주문 접수"); self.setFixedSize(440, 280)
+        self.setWindowTitle("주문 접수")
+        self.setFixedSize(520, 340)
         self._build()
 
     def _build(self):
-        lay = QVBoxLayout(self); lay.setContentsMargins(24, 24, 24, 24); lay.setSpacing(16)
-        title = QLabel("새 주문 접수"); title.setObjectName("page_title")
-        lay.addWidget(title); lay.addWidget(h_line())
-        form = QFormLayout(); form.setSpacing(12); form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        lay = QVBoxLayout(self)
+        lay.setContentsMargins(32, 28, 32, 28)
+        lay.setSpacing(18)
 
-        self._cust = QLineEdit(); self._cust.setPlaceholderText("고객명")
+        title = QLabel("새 주문 접수")
+        title.setObjectName("page_title")
+        lay.addWidget(title)
+        lay.addWidget(h_line())
+
+        form = QFormLayout()
+        form.setSpacing(16)
+        form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+
+        self._cust = QLineEdit()
+        self._cust.setPlaceholderText("예: KAIST 반도체연구소")
+        self._cust.setMinimumHeight(38)
+
         self._combo = QComboBox()
+        self._combo.setMinimumHeight(38)
         samples = self._sc.get_all()
         for s in samples:
-            self._combo.addItem(f"{s.id}  —  {s.name}", s.id)
-        self._qty = QSpinBox(); self._qty.setRange(1, 9999); self._qty.setValue(1); self._qty.setSuffix(" 개")
+            self._combo.addItem(f"{s.id}  —  {s.name}  (재고: {s.stock_quantity}개)", s.id)
 
-        form.addRow("고객명",  self._cust)
-        form.addRow("시료",    self._combo)
+        self._qty = QSpinBox()
+        self._qty.setRange(1, 9999)
+        self._qty.setValue(1)
+        self._qty.setSuffix(" 개")
+        self._qty.setMinimumHeight(38)
+
+        form.addRow("고객명",    self._cust)
+        form.addRow("시료 선택", self._combo)
         form.addRow("주문 수량", self._qty)
         lay.addLayout(form)
 
+        lay.addStretch()
         btns = QHBoxLayout(); btns.addStretch()
-        cancel = QPushButton("취소"); cancel.setObjectName("btn_secondary"); cancel.clicked.connect(self.reject)
-        ok = QPushButton("접수"); ok.clicked.connect(self._submit)
+        cancel = QPushButton("취소"); cancel.setObjectName("btn_secondary")
+        cancel.setMinimumWidth(90); cancel.clicked.connect(self.reject)
+        ok = QPushButton("접수"); ok.setMinimumWidth(90); ok.clicked.connect(self._submit)
         btns.addWidget(cancel); btns.addWidget(ok); lay.addLayout(btns)
 
     def _submit(self):
@@ -196,7 +222,8 @@ class ReserveDialog(QDialog):
         sid  = self._combo.currentData()
         qty  = self._qty.value()
         if not cust:
-            QMessageBox.warning(self, "오류", "고객명을 입력하세요."); return
+            QMessageBox.warning(self, "오류", "고객명을 입력하세요.")
+            return
         order, err = self._oc.create(cust, sid, qty)
         if err:
             QMessageBox.warning(self, "오류", err)
