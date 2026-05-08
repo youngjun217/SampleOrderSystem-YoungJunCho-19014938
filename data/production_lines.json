@@ -1,0 +1,5 @@
+[
+  {"id": "LINE-01", "name": "생산라인 1호", "status": "IDLE", "current_order_id": ""},
+  {"id": "LINE-02", "name": "생산라인 2호", "status": "IDLE", "current_order_id": ""},
+  {"id": "LINE-03", "name": "생산라인 3호", "status": "IDLE", "current_order_id": ""}
+]
