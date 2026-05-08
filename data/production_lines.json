@@ -3,18 +3,18 @@
     "id": "LINE-01",
     "name": "생산라인 1호",
     "status": "RUNNING",
-    "current_order_id": "b9ec5a85"
+    "current_order_id": "053f31f6"
   },
   {
     "id": "LINE-02",
     "name": "생산라인 2호",
     "status": "RUNNING",
-    "current_order_id": "857ffb9e"
+    "current_order_id": "6707cdec"
   },
   {
     "id": "LINE-03",
     "name": "생산라인 3호",
     "status": "RUNNING",
-    "current_order_id": "8999f5c2"
+    "current_order_id": "32442315"
   }
 ]

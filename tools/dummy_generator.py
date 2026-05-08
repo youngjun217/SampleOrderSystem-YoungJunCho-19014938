@@ -104,12 +104,25 @@ def generate(
     print(f"  [주문] {len(orders)}건 생성")
 
     # PRODUCING 주문에 생산 이력 연결
-    lines = line_repo.find_all()
+    import math
+    from model.production_line import LineStatus
+    lines    = line_repo.find_all()
     line_idx = 0
     for o in orders:
         if o.status == OrderStatus.PRODUCING:
             sample = next((s for s in samples if s.id == o.sample_id), None)
-            assigned_line = lines[line_idx % len(lines)] if lines else None
+            # PRODUCING = 재고 부족 상황 → shortage는 주문량 기준으로 설정
+            yield_rate     = sample.yield_rate if sample else 1.0
+            avg_time       = sample.avg_production_time if sample else 1.0
+            shortage       = o.quantity   # 재고 없음 가정 (PRODUCING 시나리오)
+            effective      = max(yield_rate * 0.9, 0.01)
+            actual_qty     = math.ceil(shortage / effective) if shortage > 0 else 0
+            total_time     = round(avg_time * actual_qty, 2)
+
+            assigned_line  = lines[line_idx % len(lines)] if lines else None
+            prod_status    = ProductionStatus.RUNNING if assigned_line else ProductionStatus.WAITING
+            started_at     = _rand_date(7) if prod_status == ProductionStatus.RUNNING else ""
+
             p = Production(
                 id=str(uuid.uuid4())[:8],
                 line_id=assigned_line.id if assigned_line else "",
@@ -117,18 +130,20 @@ def generate(
                 sample_id=o.sample_id,
                 sample_name=o.sample_name,
                 quantity=o.quantity,
-                status=ProductionStatus.RUNNING,
-                started_at=_rand_date(7),
+                shortage=shortage,
+                actual_quantity=actual_qty,
+                total_time=total_time,
+                status=prod_status,
+                started_at=started_at,
             )
             prod_repo.save(p)
-            if assigned_line:
-                from model.production_line import LineStatus
+            if assigned_line and prod_status == ProductionStatus.RUNNING:
                 assigned_line.status = LineStatus.RUNNING
                 assigned_line.current_order_id = o.id
                 line_repo.update(assigned_line)
             line_idx += 1
     producing_count = sum(1 for o in orders if o.status == OrderStatus.PRODUCING)
-    print(f"  [생산] {producing_count}건 생산 이력 연결")
+    print(f"  [생산] {producing_count}건 생산 이력 연결 (부족분·실생산량·시간 포함)")
     print("\n  더미 데이터 생성 완료.")
 
 
